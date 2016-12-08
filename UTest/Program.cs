@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using UpdataAnalyzeTool.Repository;
 using UpdataAnalyzeTool.Domain;
 using System.IO;
+using UTest.menu;
+using UTest.Commands;
 
 namespace UTest
 {
@@ -18,15 +20,28 @@ namespace UTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Cmd Help!");
-            Console.WriteLine("  OpenSoftFile [file path name]");
-            Console.WriteLine("  OpenComFile bin|txt [file path name]");
-            Console.WriteLine("  Analyze");
-            Console.WriteLine("  Compare(SSW|USW|QSW) [packageNum]");
-            Console.WriteLine("\n");
-
+            Console.WriteLine("Welcome! Input num key to select.\n");
 
             CmdParse cp = new CmdParse();
+
+            while (true)
+            {
+                var mainMenuId = MainMenu.GetMainCmdId();
+                switch (mainMenuId)
+                {
+                    case 3:
+                        AnalyzeMain.Do();
+                        break;
+                    case 9:
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.WriteLine("Bad Select!");
+                        break;
+                }
+                Console.WriteLine();
+            }
+
             while (true)
             {
                 var cmdLine1 = Console.ReadLine();
@@ -71,6 +86,15 @@ namespace UTest
                         continue;
                     }
                     cp.CompareUSW(Convert.ToInt32(cmd[1]));
+                }
+                else if (cmd[0].ToLower() == "getcomdatausw")
+                {
+                    if (cmd.Length < 2)
+                    {
+                        Console.WriteLine("use: CompareUSW num");
+                        continue;
+                    }
+                    cp.GetComDataUSW(Convert.ToInt32(cmd[1]));
                 }
                 else if (cmd[0] == "")
                 {

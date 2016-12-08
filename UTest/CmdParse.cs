@@ -186,6 +186,73 @@ namespace UTest
             Console.WriteLine("\n");
         }
 
+        public void GetComDataUSW(int index)
+        {
+            if (index >= updRep.uswSendList.Count)
+            {
+                Console.Write("Num is out of range!\n");
+                return;
+            }
+
+            var num = binRep.uswSendList.FindLastIndex(p => p.packageNum[0] == index);
+            if (index < 0)
+            {
+                Console.Write("package missed!\n");
+                return;
+            }
+
+            var top = 1;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("From Bin File:");
+            Console.ResetColor();
+
+            for (int i = 0; i < binRep.uswSendList[num].body.Length; i++)
+            {
+                if (updRep.uswSendList[index].body[i] != binRep.uswSendList[num].body[i])
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(binRep.uswSendList[num].body[i].ToString("X2") + " ");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.Write(binRep.uswSendList[num].body[i].ToString("X2") + " ");
+                }
+                if ((i + 1) % 8 == 0)
+                {
+                    top++;
+                    Console.WriteLine();
+                }
+            }
+
+            Console.CursorTop -= top;
+            Console.CursorLeft += 18;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("From Com File:");
+            Console.CursorLeft += 30;
+            Console.ResetColor();
+
+            for (int i = 0; i < binRep.uswSendList[num].body.Length; i++)
+            {
+                if (updRep.uswSendList[index].body[i] != binRep.uswSendList[num].body[i])
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(updRep.uswSendList[index].body[i].ToString("X2") + " ");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.Write(updRep.uswSendList[index].body[i].ToString("X2") + " ");
+                }
+                if ((i + 1) % 8 == 0)
+                {
+                    Console.WriteLine();
+                    Console.CursorLeft += 30;
+                }
+            }
+            Console.WriteLine("\n");
+        }
+
         private void AnalyzeQSWSendPack()
         {
             Console.WriteLine("the count of QSW send packages : " + updRep.qswSendList.Count);
