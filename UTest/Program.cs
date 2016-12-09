@@ -13,11 +13,13 @@ using UpdataAnalyzeTool.Domain;
 using System.IO;
 using UTest.menu;
 using UTest.Commands;
+using System.Windows.Forms;
 
 namespace UTest
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome! Input num key to select.\n");
@@ -26,11 +28,20 @@ namespace UTest
 
             while (true)
             {
-                var mainMenuId = MainMenu.GetMainCmdId();
+                var mainMenuId = menu.MainMenu.GetMainCmdId();
                 switch (mainMenuId)
                 {
+                    case 1:
+                        GetBinRepository.Execute();
+                        break;
+                    case 2:
+                        GetComRepository.Execute();
+                        break;
                     case 3:
                         AnalyzeMain.Do();
+                        break;
+                    case 4:
+                        ParseSubMenu_Compare();
                         break;
                     case 9:
                         Console.Clear();
@@ -41,70 +52,32 @@ namespace UTest
                 }
                 Console.WriteLine();
             }
+        }
 
-            while (true)
+        private static void ParseSubMenu_Compare()
+        {
+            var subMenuId = SubMenu.CompareUpadataPackage();
+            switch (subMenuId)
             {
-                var cmdLine1 = Console.ReadLine();
-                var cmd = cmdLine1.Split(' ');
-                if (cmd[0].ToLower() == "opensoftfile")
-                {
-                    if (cmd.Length < 2)
-                    {
-                        Console.WriteLine("use: OpenSoftFile FilePathName");
-                        continue;
-                    }
+                case 1:
+                    CompareSSW.Execute();
+                    break;
+                case 2:
+                    CompareUSW.Execute(0);
+                    break;
+                case 3:
+                    CompareUSW.Execute(1);
+                    break;
+                case 4:
 
-                    cp.OpenBinFile(cmd[1]);
-                }
-                else if (cmd[0].ToLower() == "opencomfile")
-                {
-                    if (cmd.Length < 3)
-                    {
-                        Console.WriteLine("use: OpenComFile bin|txt FilePathName");
-                        continue;
-                    }
-                    cp.OpenComFile(cmd[2], cmd[1]);
-                }
-                else if (cmd[0].ToLower() == "analyze")
-                {
-                    cp.Analyze();
-                }
-                else if (cmd[0].ToLower() == "comparessw")
-                {
-                    if (cmd.Length < 2)
-                    {
-                        Console.WriteLine("use: CompareSSW num");
-                        continue;
-                    }
-                    cp.CompareSSW(Convert.ToInt32(cmd[1]));
-                }
-                else if (cmd[0].ToLower() == "compareusw")
-                {
-                    if (cmd.Length < 2)
-                    {
-                        Console.WriteLine("use: CompareUSW num");
-                        continue;
-                    }
-                    cp.CompareUSW(Convert.ToInt32(cmd[1]));
-                }
-                else if (cmd[0].ToLower() == "getcomdatausw")
-                {
-                    if (cmd.Length < 2)
-                    {
-                        Console.WriteLine("use: CompareUSW num");
-                        continue;
-                    }
-                    cp.GetComDataUSW(Convert.ToInt32(cmd[1]));
-                }
-                else if (cmd[0] == "")
-                {
-
-                }
-                else
-                {
-                    Console.WriteLine("Unkown Command!");
-                }
+                    break;
+                case 9:
+                    return;
+                default:
+                    Console.WriteLine("Bad Select!");
+                    break;
             }
+            Console.WriteLine();
         }
     }
 }

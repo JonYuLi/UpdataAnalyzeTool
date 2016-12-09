@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UpdataAnalyzeTool.Model;
+using UpdataAnalyzeTool.Repository;
+using UpdataAnalyzeTool.Utility;
 
 namespace UTest.Commands
 {
@@ -13,11 +16,29 @@ namespace UTest.Commands
         /// </summary>
         public static void Do()
         {
+            UpdataRepository comRepo = Repository.Repository.ComRepository();
+            UpdataRepository binRepo = Repository.Repository.BinRepository();
             try
             {
-                AnalyzeSSW();
-                AnalyzeUSW();
-                AnalyzeQSW();
+                if (comRepo == null)
+                {
+                    Console.WriteLine("The comm data file has not Selected!");
+                    return;
+                }
+                if (binRepo == null)
+                {
+                    Console.WriteLine("The encrypted bin data file has not Selected!");
+                    return;
+                }
+
+                var binSSW = binRepo.sswSendList[0];
+                AnalyzeSSW(binSSW, comRepo.sswSendList);
+
+                AnalyzeUSW(binRepo.uswSendList, comRepo.uswSendList);
+
+                var binQSW = binRepo.qswSendList[0];
+                AnalyzeQSW(binQSW, comRepo.qswSendList);
+
                 AnalyzeSSW_resp();
                 AnalyzeUSW_resp();
                 AnalyzeQSW_resp();
@@ -36,7 +57,7 @@ namespace UTest.Commands
         /// </summary>
         private static void AnalyzeUSW_resp()
         {
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>
@@ -44,7 +65,7 @@ namespace UTest.Commands
         /// </summary>
         private static void AnalyzeQSW_resp()
         {
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>
@@ -52,31 +73,66 @@ namespace UTest.Commands
         /// </summary>
         private static void AnalyzeSSW_resp()
         {
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>
         /// 对比QSW数据包
         /// </summary>
-        private static void AnalyzeQSW()
+        private static void AnalyzeQSW(QSW_Send bin, List<QSW_Send> comList)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Red;
+            for (int i = 0; i < comList.Count; i++)
+            {
+                if (!ByteUtility.Compares(bin.body, comList[i].body))
+                {
+                    Console.WriteLine("SSW Package ERROR: [{0}]", i);
+                }
+            }
+            Console.ResetColor();
+            Console.WriteLine("Analyzed SSW Packages Done! Totle count : {0}\n", comList.Count);
         }
 
         /// <summary>
         /// 对比USW数据包
         /// </summary>
-        private static void AnalyzeUSW()
+        private static void AnalyzeUSW(List<USW_Send> binList, List<USW_Send> comList)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Red;
+            for (int i = 0; i < binList.Count; i++)
+            {
+                var comUSW = comList.FindLast(p => p.packageNum[0] == i);
+                if (comUSW != null)
+                {
+                    if (!ByteUtility.Compares(binList[i].body, comUSW.body))
+                    {
+                        Console.WriteLine("USW Package ERROR! Package Num : [{0}]", i);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("USW Package Lost! Package Num : [{0}]", i);
+                }
+            }
+            Console.ResetColor();
+            Console.WriteLine("Analyzed SSW Packages Done! Totle count(encrypted bin file): {0}\n", binList.Count);
         }
 
         /// <summary>
         /// 对比SSW数据包
         /// </summary>
-        private static void AnalyzeSSW()
+        private static void AnalyzeSSW(SSW_Send bin, List<SSW_Send> comList)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Red;
+            for (int i = 0; i < comList.Count; i++)
+            {
+                if (!ByteUtility.Compares(bin.body, comList[i].body))
+                {
+                    Console.WriteLine("SSW Package ERROR: [{0}]", i);
+                }
+            }
+            Console.ResetColor();
+            Console.WriteLine("Analyzed SSW Packages Done! Totle count : {0}\n", comList.Count);
         }
     }
 }
