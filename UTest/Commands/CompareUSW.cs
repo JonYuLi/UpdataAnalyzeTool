@@ -38,7 +38,7 @@ namespace UTest.Commands
 
         private static void Comparer(List<USW_Send> uswList1, List<USW_Send> uswList2)
         {
-            Console.WriteLine("Input package num.");
+            Console.WriteLine("Total packages: {0}. Input package num.", uswList1.Count);
             var numStr = Console.ReadLine();
             try
             {

@@ -26,7 +26,7 @@ namespace UTest.Commands
                 return;
             }
 
-            Console.WriteLine("Input package num.");
+            Console.WriteLine("Total packages : {0}.Input package num.", comRepo.sswSendList.Count);
             var numStr = Console.ReadLine();
             try
             {

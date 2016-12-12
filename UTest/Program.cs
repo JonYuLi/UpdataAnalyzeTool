@@ -24,8 +24,6 @@ namespace UTest
         {
             Console.WriteLine("Welcome! Input num key to select.\n");
 
-            CmdParse cp = new CmdParse();
-
             while (true)
             {
                 var mainMenuId = menu.MainMenu.GetMainCmdId();
@@ -42,6 +40,12 @@ namespace UTest
                         break;
                     case 4:
                         ParseSubMenu_Compare();
+                        break;
+                    case 5:
+                        byte[] b = new byte[2];
+                        b[0] = 0x7F;
+                        b[1] = 0xFE;
+                        Console.WriteLine(QSWMessage.CheckPackagesFlag(b, 15));
                         break;
                     case 9:
                         Console.Clear();
@@ -69,7 +73,7 @@ namespace UTest
                     CompareUSW.Execute(1);
                     break;
                 case 4:
-
+                    CompareQSW.Execute();
                     break;
                 case 9:
                     return;

@@ -39,9 +39,20 @@ namespace UTest.Commands
                 var binQSW = binRepo.qswSendList[0];
                 AnalyzeQSW(binQSW, comRepo.qswSendList);
 
-                AnalyzeSSW_resp();
-                AnalyzeUSW_resp();
-                AnalyzeQSW_resp();
+                AnalyzeSSW_resp(comRepo.sswRecvList);
+
+                AnalyzeUSW_resp(comRepo.uswRecvList, binRepo.uswSendList.Count);
+
+                if (comRepo.qswRecvList.Count == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("QSW Response Packages Not Found!");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    AnalyzeQSW_resp(comRepo.qswRecvList[comRepo.qswRecvList.Count - 1], binRepo.uswSendList.Count);
+                }
             }
             catch(Exception ex)
             {
@@ -55,25 +66,81 @@ namespace UTest.Commands
         /// <summary>
         /// 分析USW响应包
         /// </summary>
-        private static void AnalyzeUSW_resp()
+        private static void AnalyzeUSW_resp(List<USW_Recv> comList, int packageNum)
         {
-            
+            Console.ForegroundColor = ConsoleColor.Red;
+            for (int i = 0; i < packageNum; i++)
+            {
+                USW_Recv usw = comList.FindLast(p => p.packageNum[0] == i);
+                if (usw == null)
+                {
+                    Console.WriteLine("USW Response Package Lost[{0}]", packageNum);
+                }
+                else
+                {
+                    if (usw.response[0] != 0)
+                    {
+                        Console.WriteLine("USW Response Package ERROR Code [{1}], in [{0}]", packageNum, usw.response[0]);
+                    }
+                }
+            }
+            Console.ResetColor();
+            Console.WriteLine("Analyzed QSW Response Packages Done! Total count : {0}\n", comList.Count);
         }
 
         /// <summary>
         /// 分析QSW响应包
         /// </summary>
-        private static void AnalyzeQSW_resp()
+        private static void AnalyzeQSW_resp(QSW_Recv qsw, int packagesNum)
         {
-            
+            Console.WriteLine("QSW Response in last package:");
+            if (qsw.updataStatus[0] != 5)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Status: " + qsw.updataStatus[0].ToString("X2") + " " + 
+                    QSWMessage.UpdateStatusMsg((UpdateStatus)qsw.updataStatus[0]));
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.WriteLine("Status: " + qsw.updataStatus[0].ToString("X2") + " " +
+                    QSWMessage.UpdateStatusMsg((UpdateStatus)qsw.updataStatus[0]));
+            }
+            if (qsw.updataResult[0] != 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Result: " + qsw.updataResult[0].ToString("X2") + " " +
+                    QSWMessage.UpdateResultMsg((UpdateResult)qsw.updataResult[0]));
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.WriteLine("Result: " + qsw.updataResult[0].ToString("X2") + " " +
+                    QSWMessage.UpdateResultMsg((UpdateResult)qsw.updataResult[0]));
+            }
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(QSWMessage.CheckPackagesFlag(qsw.packageFlag, packagesNum));
+            Console.ResetColor();
         }
 
         /// <summary>
         /// 分析SSW的响应包
         /// </summary>
-        private static void AnalyzeSSW_resp()
+        private static void AnalyzeSSW_resp(List<SSW_Recv> comList)
         {
-            
+            Console.WriteLine("SSW response packages. Total count : {0}", comList.Count);
+            Console.Write("The Response Code in last package is ");
+            if (comList[comList.Count - 1].response[0] == 0)
+            {
+                Console.WriteLine(comList[comList.Count - 1].response[0].ToString("X2"));
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(comList[comList.Count - 1].response[0].ToString("X2"));
+                Console.ResetColor();
+            }
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -90,7 +157,7 @@ namespace UTest.Commands
                 }
             }
             Console.ResetColor();
-            Console.WriteLine("Analyzed SSW Packages Done! Totle count : {0}\n", comList.Count);
+            Console.WriteLine("Analyzed SSW Packages Done! Total count : {0}\n", comList.Count);
         }
 
         /// <summary>
@@ -115,7 +182,7 @@ namespace UTest.Commands
                 }
             }
             Console.ResetColor();
-            Console.WriteLine("Analyzed SSW Packages Done! Totle count(encrypted bin file): {0}\n", binList.Count);
+            Console.WriteLine("Analyzed SSW Packages Done! Total count(encrypted bin file): {0}\n", binList.Count);
         }
 
         /// <summary>

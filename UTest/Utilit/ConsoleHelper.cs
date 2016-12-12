@@ -8,28 +8,44 @@ namespace UTest.Utilit
 {
     public class ConsoleHelper
     {
+        /// <summary>
+        /// 用户从键盘上按下的数字键
+        /// </summary>
+        /// <returns></returns>
         public static int GetNumKey()
         {
-            var numKey = Console.ReadKey();
-            Console.WriteLine();
+            //var numKey = Console.ReadKey();
+            //Console.WriteLine();
 
-            if (numKey.Key >= ConsoleKey.NumPad0 && numKey.Key <= ConsoleKey.NumPad9)
+            //if (numKey.Key >= ConsoleKey.NumPad0 && numKey.Key <= ConsoleKey.NumPad9)
+            //{
+            //    return numKey.Key - ConsoleKey.NumPad0; //小键盘的数字键
+            //}
+            //if (numKey.Key >= ConsoleKey.D0 && numKey.Key <= ConsoleKey.D9)
+            //{
+            //    return numKey.Key - ConsoleKey.D0;      //键盘主区域的数字键
+            //}
+            //return 0;
+            var line = Console.ReadLine();
+            try
             {
-                return numKey.Key - ConsoleKey.NumPad0;
+                return Int32.Parse(line);
             }
-            if (numKey.Key >= ConsoleKey.D0 && numKey.Key <= ConsoleKey.D9)
+            catch
             {
-                return numKey.Key - ConsoleKey.D0;
+                return 0; 
             }
-            return 0;
+
+            //return 0;
         }
 
         /// <summary>
         /// 在控制台上打印数组b1, 与b2数组不同的数据会以红色显示
         /// </summary>
-        /// <param name="b1"></param>
-        /// <param name="b2"></param>
-        /// <param name="rowLength"></param>
+        /// <param name="b1">要输出的数组</param>
+        /// <param name="b2">用来比较的数组</param>
+        /// <param name="rowLength">一行输出十进制数的个数</param>
+        /// <param name="cursorLeft">光标向右的偏移</param>
         public static void WriteByteArray(byte[] b1, byte[] b2, int rowLength = 0, int cursorLeft = 0)
         {
             var len = Math.Min(b1.Length, b2.Length);
