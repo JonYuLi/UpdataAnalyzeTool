@@ -74,18 +74,18 @@ namespace UTest.Commands
                 USW_Recv usw = comList.FindLast(p => p.packageNum[0] == i);
                 if (usw == null)
                 {
-                    Console.WriteLine("USW Response Package Lost[{0}]", packageNum);
+                    Console.WriteLine("USW Response Package Lost[{0}]", i);
                 }
                 else
                 {
                     if (usw.response[0] != 0)
                     {
-                        Console.WriteLine("USW Response Package ERROR Code [{1}], in [{0}]", packageNum, usw.response[0]);
+                        Console.WriteLine("USW Response Package ERROR Code [{1}], in [{0}]", i, usw.response[0]);
                     }
                 }
             }
             Console.ResetColor();
-            Console.WriteLine("Analyzed QSW Response Packages Done! Total count : {0}\n", comList.Count);
+            Console.WriteLine("Analyzed USW Response Packages Done! Total count : {0}\n", comList.Count);
         }
 
         /// <summary>
@@ -129,6 +129,10 @@ namespace UTest.Commands
         private static void AnalyzeSSW_resp(List<SSW_Recv> comList)
         {
             Console.WriteLine("SSW response packages. Total count : {0}", comList.Count);
+            if (comList.Count < 1)
+            {
+                return;
+            }
             Console.Write("The Response Code in last package is ");
             if (comList[comList.Count - 1].response[0] == 0)
             {
@@ -153,11 +157,11 @@ namespace UTest.Commands
             {
                 if (!ByteUtility.Compares(bin.body, comList[i].body))
                 {
-                    Console.WriteLine("SSW Package ERROR: [{0}]", i);
+                    Console.WriteLine("QSW Package ERROR: [{0}]", i);
                 }
             }
             Console.ResetColor();
-            Console.WriteLine("Analyzed SSW Packages Done! Total count : {0}\n", comList.Count);
+            Console.WriteLine("Analyzed QSW Packages Done! Total count : {0}\n", comList.Count);
         }
 
         /// <summary>
@@ -182,7 +186,8 @@ namespace UTest.Commands
                 }
             }
             Console.ResetColor();
-            Console.WriteLine("Analyzed SSW Packages Done! Total count(encrypted bin file): {0}\n", binList.Count);
+            Console.WriteLine("Analyzed USW Packages Done! Total count(encrypted bin file): {0}", binList.Count);
+            Console.WriteLine("Total count(com data file): {0}\n", comList.Count);
         }
 
         /// <summary>
